@@ -1,2 +1,1 @@
-# X_AI
-Easy way to build your custom AI projects
+This is simple package for your easy AI projects.
