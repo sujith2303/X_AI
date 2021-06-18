@@ -1,2 +1,2 @@
 # X_AI
-Easy way to build your AI projects
+Easy way to build your custom AI projects
