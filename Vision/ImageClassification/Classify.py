@@ -85,5 +85,22 @@ class ImageClassification:
   def summary(self):
     print('Showing the summary of your model')
     self.model.summary()
-
+  def save_model(self,path):
+    print(f'Saving your model at {path} Location')
+    path = str(path) + '/' + 'model.h5'
+    self.model.save(path)
+  def save_weights(self,path,save_format='.h5'):
+    print(f'Saving weights at {path} location') 
+    if save_format == '.h5':
+      path=str(path) + '/' +'weights.h5'
+      self.model.save_weights(path)
+    elif save_format == '.weights':
+      path =str(path) + '/' + 'weights.weights'
+      self.model.save_weights(path)
+    else:
+      path =str(path) + '/' + 'weights' + str(save_format)
+      self.model.save_weights(path)
+    print(f'Successfully saved your weights at {path} location')
+      
+    
 
