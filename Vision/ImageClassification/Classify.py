@@ -24,8 +24,8 @@ class ImageClassification:
       raise FileNotFoundError('Enter a valid path')
     if not num_classes:
       raise ValueError('Enter a Non-zero number')
-   get_train_data()
-   get_labels()
+   self.get_train_data()
+   self.get_labels()
   
   def get_train_data(self):
     self.filename = os.listdir(self.ImagePath)
