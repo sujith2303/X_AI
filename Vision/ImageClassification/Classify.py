@@ -3,6 +3,7 @@ import tensorflow as tf
 import tqdm
 import os
 import matplotlib.pyplot as plt
+import cv2
 
 __author__ = 'Sujith Anumala'
 
