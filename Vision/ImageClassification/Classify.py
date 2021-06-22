@@ -52,8 +52,12 @@ class ImageClassification:
     output=tf.keras.layers.Dense(self.classes,activation='Softmax')(x)
     
     model = tf.keras.Model(x_input,output,name='Classification Model')
-    
-    model.compile(loss='mse',optimizer='adam',metrics=['Accuracy'])
+    if self.num_classes>2:
+      model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),optimizer='adam',metrics=['Accuracy'])
+    elif self.num_classes==2:
+      model.compile(loss=tf.keras.losses.BinaryCrossentropy(),optimizer='adam',metrics=['Accuracy'])
+    else:
+      raise ValueError('Enter a value for num_classes greater than or equals to 2')
     
     history = model.fit(x=trainx,y=trainy,epochs,batch_size=batch_size)
     
