@@ -22,18 +22,22 @@ class ImageClassification:
       raise FileNotFoundError('Enter a valid path')
     if not num_classes:
       raise ValueError('Enter a Non-zero number')
-   
+   get_train_data()
+  
   def get_train_data(self):
     self.filename = os.listdir(self.ImagePath)
-    
-    for file in self.filename:
+    print('Loading images..............')
+    for file in tqdm(self.filename):
       img = cv2.imread(os.path.join(self.ImagePath,file))
       img = cv2.resize(img,self.input_shape)
       img = np.array(img)
       img/=255
       self.images.append(img)
-    
+      
     self.images = np.array(self.images)
+    print('Successfully Loaded all the images.....')
+  def get_labels(self,datatype='.txt'):
+    pass
   
   def Train(self,epochs=10,batch_size = 128):
     input_shape=self.input_shape
