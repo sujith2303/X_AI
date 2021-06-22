@@ -7,21 +7,36 @@ import matplotlib.pyplot as plt
 __author__ = 'Sujith Anumala'
 
 class ImageClassification:
-  def __init__(self,ImagePath=None,LabelsPath=None,num_classes=None):
+  def __init__(self,ImagePath=None,LabelsPath=None,num_classes=None,input_shape=(320,320,3)):
     self.ImagePath = ImagePath
     self.LabelsPath= LabelsPath
     self.classes   = classes
-    self.images    = None
-    self.labels    = None
+    self.images    = []
+    self.labels    = []
     self.history   = None
+    self.filename  = []
+    self.input_shape = input_shape
     if not ImagePath:
       raise FileNotFoundError('Enter a valid path')
     if not LabelsPath:
       raise FileNotFoundError('Enter a valid path')
     if not num_classes:
       raise ValueError('Enter a Non-zero number')
+   
+  def get_train_data(self):
+    self.filename = os.listdir(self.ImagePath)
+    
+    for file in self.filename:
+      img = cv2.imread(os.path.join(self.ImagePath,file))
+      img = cv2.resize(img,self.input_shape)
+      img = np.array(img)
+      img/=255
+      self.images.append(img)
+    
+    self.images = np.array(self.images)
   
-  def Train(self,epochs=10,input_shape=(320,320,3),batch_size = 128):
+  def Train(self,epochs=10,batch_size = 128):
+    input_shape=self.input_shape
     
     model =tf.keras.applications.vgg16.VGG16(
     include_top=False, weights='imagenet')
