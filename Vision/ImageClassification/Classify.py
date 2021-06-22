@@ -16,6 +16,7 @@ class ImageClassification:
     self.history   = None
     self.filename  = []
     self.input_shape = input_shape
+    self.model       =None
     if not ImagePath:
       raise FileNotFoundError('Enter a valid path')
     if not LabelsPath:
@@ -60,8 +61,8 @@ class ImageClassification:
       raise ValueError('Enter a value for num_classes greater than or equals to 2')
     
     history = model.fit(x=trainx,y=trainy,epochs,batch_size=batch_size)
-    
-    return model
+    self.model =model
+    #return model
   
   def plot_results(self):
     history = self.history
@@ -81,6 +82,8 @@ class ImageClassification:
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
     plt.show()
-
+  def summary(self):
+    print('Showing the summary of your model')
+    self.model.summary()
 
 
