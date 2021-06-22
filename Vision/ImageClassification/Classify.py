@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 __author__ = 'Sujith Anumala'
 
 class ImageClassification:
-  def __init__(self,ImagePath=None,LabelsPath=None,num_classes=None,input_shape=(320,320,3)):
+  def __init__(self,ImagePath=None,LabelsPath=None,num_classes=None,names=None,input_shape=(320,320,3)):
     self.ImagePath = ImagePath
     self.LabelsPath= LabelsPath
     self.classes   = classes
@@ -17,6 +17,7 @@ class ImageClassification:
     self.filename  = []
     self.input_shape = input_shape
     self.model       =None
+    self.names     = names   #Names of the classes
     if not ImagePath:
       raise FileNotFoundError('Enter a valid path')
     if not LabelsPath:
@@ -24,6 +25,7 @@ class ImageClassification:
     if not num_classes:
       raise ValueError('Enter a Non-zero number')
    get_train_data()
+   get_labels()
   
   def get_train_data(self):
     self.filename = os.listdir(self.ImagePath)
@@ -38,7 +40,12 @@ class ImageClassification:
     self.images = np.array(self.images)
     print('Successfully Loaded all the images.....')
   def get_labels(self,datatype='.txt'):
-    pass
+    for i in self.filename:
+      label = (open(f'{i}.txt','r')).read()
+      label = self.names.findindex(label)
+      self.labels.append(label)
+    self.labels = np.array(self.labels)
+    self.labels = tf.keras.utils.to_categorical(self.labels)
   
   def Train(self,epochs=10,batch_size = 128):
     input_shape=self.input_shape
@@ -63,7 +70,12 @@ class ImageClassification:
     history = model.fit(x=trainx,y=trainy,epochs,batch_size=batch_size)
     self.model =model
     #return model
-  
+  def predict(self,image_path):
+    img = cv2.imread(image_path)
+    img = cv2.resize(img,self.input_shape)
+    img = np.expand_dims(img,axis=0)
+    print('Detected a',self.names[np.argmax(self.model.predict(img))])
+   
   def plot_results(self):
     history = self.history
     print('Plotting accuracy.................')
