@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import tqdm
+#from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt
 import cv2
@@ -9,52 +9,41 @@ __author__ = 'Sujith Anumala'
 
 
 class ImageClassification:
-    def __init__(self, ImagePath=None, LabelsPath=None, num_classes=None, names=None, input_shape=(320, 320, 3)):
+    def __init__(self, ImagePath=None,input_shape=(320, 320, 3)):
         self.ImagePath = ImagePath
-        self.LabelsPath = LabelsPath
-        #self.classes = classes
+        self.classes = None
         self.images = []
         self.labels = []
         self.history = None
         self.filename = []
         self.input_shape = input_shape
         self.model = None
-        self.names = names  # Names of the classes
         if not ImagePath:
-            raise FileNotFoundError('Enter a valid path')
-        if not LabelsPath:
-            raise FileNotFoundError('Enter a valid path')
-        if not num_classes:
-            raise ValueError('Enter a Non-zero number')
+            raise FileNotFoundError('Enter a valid path for images')
 
         self.get_train_data()
-        self.get_labels()
+        #print(self.labels)
 
 
     def get_train_data(self):
         filenames = os.listdir(self.ImagePath)
-        for filename in filenames:
-            self.filename.append((os.path.splitext(filename))[0])
+        self.classes = filenames #since filenames are classes i.e, we are storing
+                                # the images under the class name folder 
         input_shape = self.input_shape[:2]
         print('Loading images..............')
-        for file in tqdm(filenames):
-            img = cv2.imread(os.path.join(self.ImagePath, file))
-            img = cv2.resize(img, input_shape)
-            img = np.array(img)
-            img = img/255
-            self.images.append(img)
-
+        for filename in filenames:
+            files = os.listdir(os.path.join(self.ImagePath,filename))
+            for f in files:
+                file = filename + '/' + f
+                img = cv2.imread(os.path.join(self.ImagePath, file))
+                img = cv2.resize(img, input_shape)
+                img = np.array(img)
+                img = img/255
+                self.images.append(img)
+                self.labels.append(self.classes.index(filename))
         self.images = np.array(self.images)
-        print('Successfully Loaded all the images.....')
-
-
-    def get_labels(self, datatype='.txt'):
-        for i in self.filename:
-            label = (open(f'{i}.txt', 'r')).read()
-            label = self.names.findindex(label)
-            self.labels.append(label)
-        self.labels = np.array(self.labels)
         self.labels = tf.keras.utils.to_categorical(self.labels)
+        print('Successfully Loaded all the images.....')
 
 
     def Train(self, epochs=10, batch_size=128):
@@ -135,7 +124,4 @@ class ImageClassification:
 
 
 if __name__=='__main__':
-    names = ['sujith-1','sujith-2']
-    obj = ImageClassification(ImagePath='D:/ONEDRIVE/Desktop/images/images', \
-                              LabelsPath='D:/ONEDRIVE/Desktop/images/Labels',num_classes=2,names=names,\
-                              )
+    obj = ImageClassification(ImagePath='D:/ONEDRIVE/Desktop/images/images')
