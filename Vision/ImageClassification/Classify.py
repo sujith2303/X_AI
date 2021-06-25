@@ -18,10 +18,13 @@ class ImageClassification:
         self.filename = []
         self.input_shape = input_shape
         self.model = None
+        self.prediction=None
         if not ImagePath:
             raise FileNotFoundError('Enter a valid path for images')
 
         self.get_train_data()
+        self.num_classes = len(self.classes)
+
         #print(self.labels)
 
 
@@ -46,9 +49,8 @@ class ImageClassification:
         print('Successfully Loaded all the images.....')
 
 
-    def Train(self, epochs=10, batch_size=128):
+    def _Train(self, epochs=10, batch_size=128):
         input_shape = self.input_shape
-
         model = tf.keras.applications.vgg16.VGG16(
             include_top=False, weights='imagenet')
 
@@ -56,9 +58,9 @@ class ImageClassification:
         x = model(x_input, training=False)
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
         x = tf.keras.layers.Dense(100, activation='relu')(x_input)
-        output = tf.keras.layers.Dense(self.classes, activation='Softmax')(x)
+        output = tf.keras.layers.Dense(self.num_classes, activation='Softmax')(x)
 
-        model = tf.keras.Model(x_input, output, name='Classification Model')
+        model = tf.keras.Model(x_input, output, name='custom_model')
         if self.num_classes > 2:
             model.compile(loss=tf.keras.losses.CategoricalCrossentropy(), optimizer='adam', metrics=['Accuracy'])
         elif self.num_classes == 2:
@@ -66,16 +68,11 @@ class ImageClassification:
         else:
             raise ValueError('Enter a value for num_classes greater than or equals to 2')
 
-        self.history = model.fit(x=trainx, y=trainy,epochs= epochs, batch_size=batch_size)
+        self.history = model.fit(x=self.images,\
+             y=self.labels,epochs= epochs, batch_size=batch_size)
         self.model = model
         # return model
 
-
-    def predict(self, image_path):
-        img = cv2.imread(image_path)
-        img = cv2.resize(img, self.input_shape)
-        img = np.expand_dims(img, axis=0)
-        print('Detected a', self.names[np.argmax(self.model.predict(img))])
 
 
     def plot_results(self):
@@ -122,6 +119,21 @@ class ImageClassification:
             self.model.save_weights(path)
         print(f'Successfully saved your weights at {path} location')
 
+    def _predict(self,image_path=None):
+        if not ImagePath:
+            print('Please Provide a valid path')
+            raise FileNotFoundError
+        img = cv2.imread(image_path)
+        img = cv2.resize(img,self.input_shape[:2])
+        img = img/255
+        img = np.expand_dims(img,axis=0)
+        self.prediction=self.classes[np.argmax(self.model.predict(img))]
+        print(f'Predicted a f{prediction}')
+        print('type obj.prediction to access your predicted class!')
+
 
 if __name__=='__main__':
     obj = ImageClassification(ImagePath='D:/ONEDRIVE/Desktop/images/images')
+    obj._Train(epochs = 1)
+    print(obj.summary())
+    obj.plot_results()
