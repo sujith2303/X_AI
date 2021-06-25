@@ -50,27 +50,36 @@ class ImageClassification:
 
 
     def _Train(self, epochs=10, batch_size=128):
+        print()
+        print()
+        print()
+        print('Training Your Model')
         input_shape = self.input_shape
-        model = tf.keras.applications.vgg16.VGG16(
-            include_top=False, weights='imagenet')
-
-        x_input = tf.keras.layers.Input(shape=input_shape)
-        x = model(x_input, training=False)
+        base_model = tf.keras.applications.vgg16.VGG16(
+            include_top=False, input_shape=self.input_shape,weights='imagenet')
+        base_model.trainable = False
+        x_input = tf.keras.Input(shape=input_shape)
+        x = base_model(x_input, training=False)
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(100, activation='relu')(x_input)
+        x = tf.keras.layers.Dense(100, activation='relu')(x)
         output = tf.keras.layers.Dense(self.num_classes, activation='Softmax')(x)
 
         model = tf.keras.Model(x_input, output, name='custom_model')
         if self.num_classes > 2:
-            model.compile(loss=tf.keras.losses.CategoricalCrossentropy(), optimizer='adam', metrics=['Accuracy'])
+            model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['Accuracy'])
         elif self.num_classes == 2:
             model.compile(loss=tf.keras.losses.BinaryCrossentropy(), optimizer='adam', metrics=['Accuracy'])
         else:
             raise ValueError('Enter a value for num_classes greater than or equals to 2')
 
         self.history = model.fit(x=self.images,\
-             y=self.labels,epochs= epochs, batch_size=batch_size)
+             y=self.labels,epochs= epochs,validation_split=0.1,\
+              batch_size=batch_size)
         self.model = model
+        print('Trained your Model Successfully!!!!!!!!!!!!!!!!!!!!!!!')
+        print()
+        print()
+        print()
         # return model
 
 
@@ -136,4 +145,5 @@ if __name__=='__main__':
     obj = ImageClassification(ImagePath='D:/ONEDRIVE/Desktop/images/images')
     obj._Train(epochs = 1)
     print(obj.summary())
+    obj.plot_results()
     obj.plot_results()
