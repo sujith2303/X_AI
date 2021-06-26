@@ -29,11 +29,11 @@ class ImageClassification:
 
 
     def get_train_data(self):
+        print('Loading images..............')
         filenames = os.listdir(self.ImagePath)
         self.classes = filenames #since filenames are classes i.e, we are storing
                                 # the images under the class name folder 
         input_shape = self.input_shape[:2]
-        print('Loading images..............')
         for filename in tqdm(filenames):
             files = os.listdir(os.path.join(self.ImagePath,filename))
             for f in files:
