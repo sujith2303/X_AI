@@ -41,8 +41,7 @@ class ImageClassification:
                 img = cv2.imread(os.path.join(self.ImagePath, file))
                 try:
                     img = cv2.resize(img, input_shape)
-                    img = np.array(img)
-                    img = img/255
+                    img = np.array(img) 
                     self.images.append(img)
                     self.labels.append(self.classes.index(filename))
                     tf.keras.backend.clear_session()
