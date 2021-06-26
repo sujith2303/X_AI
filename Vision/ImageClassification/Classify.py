@@ -47,6 +47,7 @@ class ImageClassification:
         self.images = np.array(self.images)
         self.labels = tf.keras.utils.to_categorical(self.labels)
         print('Successfully Loaded all the images.....')
+        tf.keras.backend.clear_session()
 
 
     def _Train(self, epochs=10, batch_size=128):
