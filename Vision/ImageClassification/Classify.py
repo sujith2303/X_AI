@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-#from tqdm import tqdm
+from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt
 import cv2
@@ -34,7 +34,7 @@ class ImageClassification:
                                 # the images under the class name folder 
         input_shape = self.input_shape[:2]
         print('Loading images..............')
-        for filename in filenames:
+        for filename in tqdm(filenames):
             files = os.listdir(os.path.join(self.ImagePath,filename))
             for f in files:
                 file = filename + '/' + f
