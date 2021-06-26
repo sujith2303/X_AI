@@ -37,9 +37,9 @@ class ImageClassification:
         for filename in tqdm(filenames):
             files = os.listdir(os.path.join(self.ImagePath,filename))
             for f in files:
+                file = filename + '/' + f
+                img = cv2.imread(os.path.join(self.ImagePath, file))
                 try:
-                    file = filename + '/' + f
-                    img = cv2.imread(os.path.join(self.ImagePath, file))
                     img = cv2.resize(img, input_shape)
                     img = np.array(img)
                     img = img/255
