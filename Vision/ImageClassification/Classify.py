@@ -50,6 +50,11 @@ class ImageClassification:
         self.labels = tf.keras.utils.to_categorical(self.labels)
         print('Successfully Loaded all the images.....')
         tf.keras.backend.clear_session()
+        np.random.seed(1)
+        np.random.shuffle(self.images)
+        np.random.shuffle(self.labels)
+        self.images = self.images[:500]
+        self.labels = self.labels[:500]
 
 
     def _Train(self, epochs=10, batch_size=128):
