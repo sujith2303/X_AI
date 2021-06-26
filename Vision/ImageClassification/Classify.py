@@ -45,6 +45,7 @@ class ImageClassification:
                     img = img/255
                     self.images.append(img)
                     self.labels.append(self.classes.index(filename))
+                    tf.keras.backend.clear_session()
                 except:
                     pass
         self.images = np.array(self.images)
