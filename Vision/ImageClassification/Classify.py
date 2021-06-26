@@ -37,13 +37,16 @@ class ImageClassification:
         for filename in tqdm(filenames):
             files = os.listdir(os.path.join(self.ImagePath,filename))
             for f in files:
-                file = filename + '/' + f
-                img = cv2.imread(os.path.join(self.ImagePath, file))
-                img = cv2.resize(img, input_shape)
-                img = np.array(img)
-                img = img/255
-                self.images.append(img)
-                self.labels.append(self.classes.index(filename))
+                try:
+                    file = filename + '/' + f
+                    img = cv2.imread(os.path.join(self.ImagePath, file))
+                    img = cv2.resize(img, input_shape)
+                    img = np.array(img)
+                    img = img/255
+                    self.images.append(img)
+                    self.labels.append(self.classes.index(filename))
+                except:
+                    pass
         self.images = np.array(self.images)
         self.labels = tf.keras.utils.to_categorical(self.labels)
         print('Successfully Loaded all the images.....')
