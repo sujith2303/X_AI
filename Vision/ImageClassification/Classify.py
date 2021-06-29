@@ -34,9 +34,9 @@ class ImageClassification:
         self.classes = filenames #since filenames are classes i.e, we are storing
                                 # the images under the class name folder 
         input_shape = self.input_shape[:2]
-        for filename in tqdm(filenames):
+        for filename in filenames:
             files = os.listdir(os.path.join(self.ImagePath,filename))
-            for f in files:
+            for f in tqdm(files):
                 filed = filename + '/' + f
                 img = cv2.imread(os.path.join(self.ImagePath, filed))
                 try:
