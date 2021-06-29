@@ -57,22 +57,23 @@ class ImageClassification:
         self.labels = self.labels[:500]
 
 
-    def _Train(self, epochs=10, batch_size=128):
+    def _Train(self, epochs=10, batch_size=128,model=None):
         print()
         print()
         print()
         print('Training Your Model')
         input_shape = self.input_shape
-        base_model = tf.keras.applications.vgg16.VGG16(
-            include_top=False, input_shape=self.input_shape,weights='imagenet')
-        base_model.trainable = False
-        x_input = tf.keras.Input(shape=input_shape)
-        x = base_model(x_input, training=False)
-        x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(100, activation='relu')(x)
-        output = tf.keras.layers.Dense(self.num_classes, activation='Softmax')(x)
+        if not model:
+            base_model = tf.keras.applications.vgg16.VGG16(
+                include_top=False, input_shape=self.input_shape,weights='imagenet')
+            base_model.trainable = False
+            x_input = tf.keras.Input(shape=input_shape)
+            x = base_model(x_input, training=False)
+            x = tf.keras.layers.GlobalAveragePooling2D()(x)
+            x = tf.keras.layers.Dense(100, activation='relu')(x)
+            output = tf.keras.layers.Dense(self.num_classes, activation='Softmax')(x)
 
-        model = tf.keras.Model(x_input, output, name='custom_model')
+            model = tf.keras.Model(x_input, output, name='custom_model')
         if self.num_classes > 2:
             model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['Accuracy'])
         elif self.num_classes == 2:
