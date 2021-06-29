@@ -94,6 +94,8 @@ class ImageClassification:
 
 
     def plot_results(self):
+        if not self.history:
+            raise Exception('Unable to plot! Make Sure You Trained your Model!')
         history = self.history
         print('Plotting accuracy.................')
         plt.plot(history.history['accuracy'])
@@ -114,17 +116,23 @@ class ImageClassification:
 
 
     def summary(self):
+        if not self.model:
+            raise Exception('Unable to show summary! Make Sure You created a Model!')
         print('Showing the summary of your model')
         self.model.summary()
 
 
     def save_model(self, path):
+        if not self.model:
+            raise Exception('Make Sure You Trained your Model!')
         print(f'Saving your model at {path} Location')
         path = str(path) + '/' + 'model.h5'
         self.model.save(path)
 
 
     def save_weights(self, path, save_format='.h5'):
+        if not self.model:
+            raise Exception('Make Sure You Trained your Model!')
         print(f'Saving weights at {path} location')
         if save_format == '.h5':
             path = str(path) + '/' + 'weights.h5'
@@ -138,6 +146,8 @@ class ImageClassification:
         print(f'Successfully saved your weights at {path} location')
 
     def _predict(self,image_path=None):
+        if not self.history:
+            raise Exception('Make Sure You Trained your Model!')
         if not ImagePath:
             print('Please Provide a valid path')
             raise FileNotFoundError
