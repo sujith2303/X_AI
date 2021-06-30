@@ -111,10 +111,14 @@ class ImageClassification:
           self.history = model.fit( train_generator,
                                     steps_per_epoch=len(self.labels) // batch_size,
                                     epochs=epochs,
+                                   validation_data=val_generator,
+                                validation_steps=nval // batch_size,
                                     callbacks=callbacks)
         else:
           self.history = model.fit( train_generator,
                                     steps_per_epoch=len(self.labels) // batch_size,
+                                   validation_data=val_generator,
+                              validation_steps=nval // batch_size,
                                     epochs=epochs
                                     )
         self.model = model
