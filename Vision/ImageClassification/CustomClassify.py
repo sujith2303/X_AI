@@ -82,10 +82,10 @@ class ImageClassification:
             x = tf.keras.layers.Dense(100, activation='relu')(x)
             output = tf.keras.layers.Dense(self.num_classes, activation='Softmax')(x)'''
             model = tf.keras.models.Sequential()
-            tf.keras.model.add(conv_base)
-            tf.keras.model.add(tf.keras.layers.Flatten())
-            tf.keras.model.add(tf.keras.layers.Dense(256, activation='relu'))
-            tf.keras.model.add(tf.keras.layers.Dense(self.num_classes, activation='softmax')) 
+            model.add(conv_base)
+            model.add(tf.keras.layers.Flatten())
+            model.add(tf.keras.layers.Dense(256, activation='relu'))
+            model.add(tf.keras.layers.Dense(self.num_classes, activation='softmax')) 
             conv_base.trainable = False
             
         if self.num_classes > 2:
