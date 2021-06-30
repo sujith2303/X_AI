@@ -4,6 +4,12 @@ from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt
 import cv2
+from keras.models import Sequential
+from keras.layers import Dense,Flatten,add
+from keras.preprocessing.image import ImageDataGenerator
+from keras.applications import inception_resnet_v2
+from keras.callbacks import ModelCheckpoint
+
 
 __author__ = 'Sujith Anumala'
 
@@ -19,9 +25,12 @@ class ImageClassification:
         self.input_shape = input_shape
         self.model = None
         self.prediction=None
+        self.valimages=None
+        self.vallabels=None
         if not ImagePath:
             raise FileNotFoundError('Enter a valid path for images')
 
+        print('Loading images..............')
         self.get_train_data()
         self.num_classes = len(self.classes)
 
@@ -29,7 +38,6 @@ class ImageClassification:
 
 
     def get_train_data(self):
-        print('Loading images..............')
         filenames = os.listdir(self.ImagePath)
         self.classes = filenames #since filenames are classes i.e, we are storing
                                 # the images under the class name folder 
@@ -55,58 +63,65 @@ class ImageClassification:
         np.random.shuffle(self.labels)
         self.images = self.images[:500]
         self.labels = self.labels[:500]
+        self.valimages=self.images[500:550]
+        self.vallabels =self.labels[500:550]
 
 
-    def _Train(self, epochs=10, batch_size=128,model=None,save_path=None):
+    def _Train(self, epochs=10, batch_size=128,model=None,_save=False):
         print()
-        print()
-        print()
+        train_datagen = ImageDataGenerator(rescale=1./255,   #Scale the image between 0 and 1
+                                    rotation_range=40,
+                                    width_shift_range=0.2,
+                                    height_shift_range=0.2,
+                                    shear_range=0.2,
+                                    zoom_range=0.2,
+                                    horizontal_flip=True,
+                                    fill_mode='nearest')
+        train_generator = train_datagen.flow(self.images, self.labels,batch_size=batch_size)
+        val_datagen = ImageDataGenerator(rescale=1./255)
+        val_generator = val_datagen.flow(self.valimages, self.vallabels, batch_size=batch_size)
+        
         print('Training Your Model')
         input_shape = self.input_shape
-        train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255,  
-                        rotation_range=40,
-                        width_shift_range=0.2,
-                        height_shift_range=0.2,
-                        shear_range=0.2,
-                        zoom_range=0.2,
-                        horizontal_flip=True,
-                        fill_mode='nearest')
-        train_generator = train_datagen.flow(self.images,self.labels,batch_size=batch_size)
         if not model:
-            conv_base = tf.keras.applications.vgg16.VGG16(
-                include_top=False, input_shape=self.input_shape,weights='imagenet')
-            '''base_model.trainable = False
-            x_input = tf.keras.Input(shape=input_shape)
-            x = base_model(x_input, training=False)
-            x = tf.keras.layers.GlobalAveragePooling2D()(x)
-            x = tf.keras.layers.Dense(100, activation='relu')(x)
-            output = tf.keras.layers.Dense(self.num_classes, activation='Softmax')(x)'''
-            model = tf.keras.models.Sequential()
-            model.add(conv_base)
-            model.add(tf.keras.layers.Flatten())
-            model.add(tf.keras.layers.Dense(256, activation='relu'))
-            model.add(tf.keras.layers.Dense(self.num_classes, activation='softmax')) 
-            conv_base.trainable = False
-            model.summary()
-            
+            base_model = inception_resnet_v2.InceptionResNetV2(weights='imagenet',\
+                                                               include_top=False, input_shape=self.input_shape)
+            base_model.trainable = False
+            model=Sequential()
+            model.add(base_model)
+            model.add(Flatten())
+            model.add(Dense(100,activation='relu'))
+            model.add(Dense(self.num_classes,activation='softmax'))
         if self.num_classes > 2:
-            model.compile(loss='categorical_crossentropy', optimizer=optimizers.RMSprop(lr=2e-5), metrics=['acc'])
+            model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.RMSprop(learning_rate=2e-5),\
+                          metrics=['acc'])
         elif self.num_classes == 2:
-            model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(lr=2e-5), metrics=['acc'])
+            model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(learning_rate=2e-5),\
+                          metrics=['acc'])
         else:
             raise ValueError('Enter a value for num_classes greater than or equals to 2')
-
-        self.history = model.fit(train_generator,
-                              steps_per_epoch=len(self.images) // batch_size,
-                              epochs=epochs,
-                              validation_split=0.1,
-                              verbose = 1)
+        if _save:
+          filepath = 'model.epoch{epoch:02d}-loss{val_loss:.2f}.h5'
+          checkpoint = ModelCheckpoint(filepath=filepath, 
+                             monitor='val_loss',
+                             verbose=1, 
+                             save_best_only=True,
+                             mode='min')
+          callbacks = [checkpoint]
+          self.history = model.fit( train_generator,
+                                    steps_per_epoch=len(self.labels) // batch_size,
+                                    epochs=epochs,
+                                    callbacks=callbacks)
+        else:
+          self.history = model.fit( train_generator,
+                                    steps_per_epoch=len(self.labels) // batch_size,
+                                    epochs=epochs
+                                    )
         self.model = model
         print('Trained your Model Successfully!!!!!!!!!!!!!!!!!!!!!!!')
         print()
         print()
         print()
-        # return model
 
 
 
@@ -165,7 +180,7 @@ class ImageClassification:
     def _predict(self,image_path=None):
         if not self.history:
             raise Exception('Make Sure You Trained your Model!')
-        if not ImagePath:
+        if not image_path:
             print('Please Provide a valid path')
             raise FileNotFoundError
         img = cv2.imread(image_path)
@@ -173,8 +188,9 @@ class ImageClassification:
         img = img/255
         img = np.expand_dims(img,axis=0)
         self.prediction=self.classes[np.argmax(self.model.predict(img))]
-        print(f'Predicted a f{prediction}')
+        print(f"Predicted a {self.prediction}")
         print('type obj.prediction to access your predicted class!')
+
 
 
 if __name__=='__main__':
