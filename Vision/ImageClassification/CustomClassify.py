@@ -73,7 +73,7 @@ class ImageClassification:
                         fill_mode='nearest')
         train_generator = train_datagen.flow(self.images,self.labels,batch_size=batch_size)
         if not model:
-            base_model = tf.keras.applications.vgg16.VGG16(
+            conv_base = tf.keras.applications.vgg16.VGG16(
                 include_top=False, input_shape=self.input_shape,weights='imagenet')
             '''base_model.trainable = False
             x_input = tf.keras.Input(shape=input_shape)
@@ -87,6 +87,7 @@ class ImageClassification:
             model.add(tf.keras.layers.Dense(256, activation='relu'))
             model.add(tf.keras.layers.Dense(self.num_classes, activation='softmax')) 
             conv_base.trainable = False
+            model.summary()
             
         if self.num_classes > 2:
             model.compile(loss='categorical_crossentropy', optimizer=optimizers.RMSprop(lr=2e-5), metrics=['acc'])
