@@ -112,13 +112,13 @@ class ImageClassification:
                                     steps_per_epoch=len(self.labels) // batch_size,
                                     epochs=epochs,
                                    validation_data=val_generator,
-                                validation_steps=nval // batch_size,
+                                validation_steps=len(self.vallabels) // batch_size,
                                     callbacks=callbacks)
         else:
           self.history = model.fit( train_generator,
                                     steps_per_epoch=len(self.labels) // batch_size,
                                    validation_data=val_generator,
-                              validation_steps=nval // batch_size,
+                              validation_steps=self.vallables // batch_size,
                                     epochs=epochs
                                     )
         self.model = model
@@ -194,8 +194,6 @@ class ImageClassification:
         self.prediction=self.classes[np.argmax(self.model.predict(img))]
         print(f"Predicted a {self.prediction}")
         print('type obj.prediction to access your predicted class!')
-
-
 
 if __name__=='__main__':
     obj = ImageClassification(ImagePath='D:/ONEDRIVE/Desktop/images/images')
