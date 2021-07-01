@@ -4,11 +4,7 @@ from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt
 import cv2
-from keras.models import Sequential
 from keras.layers import Dense,Flatten,add
-from keras.preprocessing.image import ImageDataGenerator
-from keras.applications import inception_resnet_v2
-from keras.callbacks import ModelCheckpoint
 
 
 __author__ = 'Sujith Anumala'
@@ -21,20 +17,18 @@ class ImageClassification:
         self.images = []
         self.labels = []
         self.history = None
-        self.filename = []
         self.input_shape = input_shape
         self.model = None
         self.prediction=None
         self.valimages=None
         self.vallabels=None
+        self.optimizer = tf.keras.optimizers.RMSprop(learning_rate=2e-5)
         if not ImagePath:
             raise FileNotFoundError('Enter a valid path for images')
 
-        print('Loading images..............')
+        print('Loading images.................!!!!!!!!!!!!!!')
         self.get_train_data()
         self.num_classes = len(self.classes)
-
-        #print(self.labels)
 
 
     def get_train_data(self):
@@ -61,15 +55,22 @@ class ImageClassification:
         np.random.seed(1)
         np.random.shuffle(self.images)
         np.random.shuffle(self.labels)
-        self.images = self.images[:500]
-        self.labels = self.labels[:500]
-        self.valimages=self.images[500:550]
-        self.vallabels =self.labels[500:550]
+        n =len(self.labels)
+        if  n> 550:
+            self.images = self.images[:500]
+            self.labels = self.labels[:500]
+            self.valimages=self.images[500:550]
+            self.vallabels =self.labels[500:550]
+        else:
+            self.images = self.images[:0.9*n]
+            self.labels = self.labels[:0.9*n]
+            self.valimages=self.images[0.9*n:]
+            self.vallabels =self.labels[0.9*n:]
 
 
     def _Train(self, epochs=10, batch_size=128,model=None,_save=False):
         print()
-        train_datagen = ImageDataGenerator(rescale=1./255,   #Scale the image between 0 and 1
+        train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255,   #Scale the image between 0 and 1
                                     rotation_range=40,
                                     width_shift_range=0.2,
                                     height_shift_range=0.2,
@@ -78,31 +79,31 @@ class ImageClassification:
                                     horizontal_flip=True,
                                     fill_mode='nearest')
         train_generator = train_datagen.flow(self.images, self.labels,batch_size=batch_size)
-        val_datagen = ImageDataGenerator(rescale=1./255)
+        val_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
         val_generator = val_datagen.flow(self.valimages, self.vallabels, batch_size=batch_size)
         
         print('Training Your Model')
         input_shape = self.input_shape
         if not model:
-            base_model = inception_resnet_v2.InceptionResNetV2(weights='imagenet',\
+            base_model = tf.keras.applications.inception_resnet_v2.InceptionResNetV2(weights='imagenet',\
                                                                include_top=False, input_shape=self.input_shape)
             base_model.trainable = False
-            model=Sequential()
+            model=tf.keras.models.Sequential()
             model.add(base_model)
             model.add(Flatten())
             model.add(Dense(100,activation='relu'))
             model.add(Dense(self.num_classes,activation='softmax'))
         if self.num_classes > 2:
-            model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.RMSprop(learning_rate=2e-5),\
+            model.compile(loss='categorical_crossentropy', optimizer=self.optimizer,\
                           metrics=['acc'])
         elif self.num_classes == 2:
-            model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(learning_rate=2e-5),\
+            model.compile(loss='binary_crossentropy', optimizer=self.optimizer,\
                           metrics=['acc'])
         else:
             raise ValueError('Enter a value for num_classes greater than or equals to 2')
         if _save:
           filepath = 'model.epoch{epoch:02d}-loss{val_loss:.2f}.h5'
-          checkpoint = ModelCheckpoint(filepath=filepath, 
+          checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=filepath, 
                              monitor='val_loss',
                              verbose=1, 
                              save_best_only=True,
