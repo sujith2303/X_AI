@@ -4,11 +4,7 @@ from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt
 import cv2
-from keras.models import Sequential
 from keras.layers import Dense,Flatten,add
-from keras.preprocessing.image import ImageDataGenerator
-from keras.applications import inception_resnet_v2
-from keras.callbacks import ModelCheckpoint
 
 
 __author__ = 'Sujith Anumala'
@@ -69,7 +65,7 @@ class ImageClassification:
 
     def _Train(self, epochs=10, batch_size=128,model=None,_save=False):
         print()
-        train_datagen = ImageDataGenerator(rescale=1./255,   #Scale the image between 0 and 1
+        train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255,   #Scale the image between 0 and 1
                                     rotation_range=40,
                                     width_shift_range=0.2,
                                     height_shift_range=0.2,
@@ -78,16 +74,16 @@ class ImageClassification:
                                     horizontal_flip=True,
                                     fill_mode='nearest')
         train_generator = train_datagen.flow(self.images, self.labels,batch_size=batch_size)
-        val_datagen = ImageDataGenerator(rescale=1./255)
+        val_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
         val_generator = val_datagen.flow(self.valimages, self.vallabels, batch_size=batch_size)
         
         print('Training Your Model')
         input_shape = self.input_shape
         if not model:
-            base_model = inception_resnet_v2.InceptionResNetV2(weights='imagenet',\
+            base_model = tf.keras.applications.inception_resnet_v2.InceptionResNetV2(weights='imagenet',\
                                                                include_top=False, input_shape=self.input_shape)
             base_model.trainable = False
-            model=Sequential()
+            model=tf.keras.models.Sequential()
             model.add(base_model)
             model.add(Flatten())
             model.add(Dense(100,activation='relu'))
@@ -102,7 +98,7 @@ class ImageClassification:
             raise ValueError('Enter a value for num_classes greater than or equals to 2')
         if _save:
           filepath = 'model.epoch{epoch:02d}-loss{val_loss:.2f}.h5'
-          checkpoint = ModelCheckpoint(filepath=filepath, 
+          checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=filepath, 
                              monitor='val_loss',
                              verbose=1, 
                              save_best_only=True,
@@ -112,13 +108,13 @@ class ImageClassification:
                                     steps_per_epoch=len(self.labels) // batch_size,
                                     epochs=epochs,
                                    validation_data=val_generator,
-                                validation_steps=len(self.vallabels) // batch_size,
+                                validation_steps=nval // batch_size,
                                     callbacks=callbacks)
         else:
           self.history = model.fit( train_generator,
                                     steps_per_epoch=len(self.labels) // batch_size,
                                    validation_data=val_generator,
-                              validation_steps=self.vallables // batch_size,
+                              validation_steps=nval // batch_size,
                                     epochs=epochs
                                     )
         self.model = model
@@ -195,9 +191,11 @@ class ImageClassification:
         print(f"Predicted a {self.prediction}")
         print('type obj.prediction to access your predicted class!')
 
+
 if __name__=='__main__':
     obj = ImageClassification(ImagePath='D:/ONEDRIVE/Desktop/images/images')
     obj._Train(epochs = 1)
     print(obj.summary())
     obj.plot_results()
     obj.plot_results()
+
