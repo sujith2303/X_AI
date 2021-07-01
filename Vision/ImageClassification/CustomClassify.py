@@ -17,7 +17,6 @@ class ImageClassification:
         self.images = []
         self.labels = []
         self.history = None
-        self.filename = []
         self.input_shape = input_shape
         self.model = None
         self.prediction=None
@@ -26,11 +25,9 @@ class ImageClassification:
         if not ImagePath:
             raise FileNotFoundError('Enter a valid path for images')
 
-        print('Loading images..............')
+        print('Loading images.................!!!!!!!!!!!!!!')
         self.get_train_data()
         self.num_classes = len(self.classes)
-
-        #print(self.labels)
 
 
     def get_train_data(self):
@@ -57,10 +54,17 @@ class ImageClassification:
         np.random.seed(1)
         np.random.shuffle(self.images)
         np.random.shuffle(self.labels)
-        self.images = self.images[:500]
-        self.labels = self.labels[:500]
-        self.valimages=self.images[500:550]
-        self.vallabels =self.labels[500:550]
+        n =len(self.labels)
+        if  n> 550:
+            self.images = self.images[:500]
+            self.labels = self.labels[:500]
+            self.valimages=self.images[500:550]
+            self.vallabels =self.labels[500:550]
+        else:
+            self.images = self.images[:0.9*n]
+            self.labels = self.labels[:0.9*n]
+            self.valimages=self.images[0.9*n:]
+            self.vallabels =self.labels[0.9*n:]
 
 
     def _Train(self, epochs=10, batch_size=128,model=None,_save=False):
