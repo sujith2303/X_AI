@@ -22,6 +22,7 @@ class ImageClassification:
         self.prediction=None
         self.valimages=None
         self.vallabels=None
+        self.optimizer = tf.keras.optimizers.RMSprop(learning_rate=2e-5)
         if not ImagePath:
             raise FileNotFoundError('Enter a valid path for images')
 
@@ -93,10 +94,10 @@ class ImageClassification:
             model.add(Dense(100,activation='relu'))
             model.add(Dense(self.num_classes,activation='softmax'))
         if self.num_classes > 2:
-            model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.RMSprop(learning_rate=2e-5),\
+            model.compile(loss='categorical_crossentropy', optimizer=self.optimizer,\
                           metrics=['acc'])
         elif self.num_classes == 2:
-            model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(learning_rate=2e-5),\
+            model.compile(loss='binary_crossentropy', optimizer=self.optimizer,\
                           metrics=['acc'])
         else:
             raise ValueError('Enter a value for num_classes greater than or equals to 2')
