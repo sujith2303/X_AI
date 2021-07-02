@@ -33,3 +33,10 @@ compress = ImageCompression(image)
 <p align="center">
   <img width="640" height="360" src="https://miro.medium.com/max/2396/1*kOQOZxBDNw4lI757soTEyQ.png">
 </p>
+
+<pre>
+from X_AI import NeuralStyle
+import matplotlib.pyplot as plt
+nst = NeuralStyle(image,styleimage)
+plt.imshow(nst.img)
+</pre>
