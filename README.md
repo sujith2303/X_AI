@@ -40,3 +40,5 @@ import matplotlib.pyplot as plt
 nst = NeuralStyle(image,styleimage)
 plt.imshow(nst.img)
 </pre>
+image is path to image
+styleimage is path to style image
