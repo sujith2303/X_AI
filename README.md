@@ -24,3 +24,12 @@ ImageCompression uses machine learning techniques(Unsupervised learning and Prin
 from X_AI import ImageCompression
 compress = ImageCompression(image)
 </pre>
+
+
+### Neural Style Transfer
+
+<hr>
+
+<p align="center">
+  <img width="640" height="360" src="https://miro.medium.com/max/2396/1*kOQOZxBDNw4lI757soTEyQ.png">
+</p>
