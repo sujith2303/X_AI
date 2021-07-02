@@ -12,7 +12,7 @@ You can  simply use pip to install the latest version of X_AI
 ## ImageClassification:-
 
 <p align="center">
-  <img width="640" height="360" src="https://data-flair.training/blogs/wp-content/uploads/sites/2/2020/05/Cats-Dogs-Classification-deep-learning.gif">
+  <img width="640" height="360" src="https://github.com/sujith2303/X_AI/blob/main/images/Cats-Dogs-Classification-deep-learning.gif">
 </p>
 <pre>
 from X_AI import ImageClassification
@@ -31,7 +31,7 @@ Here the path is to image folder. The folder must be of the form class1 -> conta
 
 
 <p align="center">
-  <img width="640" height="360" src="https://www.lifewire.com/thmb/dpgls7GZ2zGXbAl3U3z8L7hnHos=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/JPEG_compression_Example-ibrahim-id-5811001d3df78c2c73161f7c.jpg">
+  <img width="640" height="360" src="https://github.com/sujith2303/X_AI/blob/main/images/compression.jpg">
 </p>
 
 ImageCompression uses machine learning techniques(Unsupervised learning and Principal component Analysis(PCA) ) for Compressing the size of image.
@@ -46,7 +46,7 @@ compress = ImageCompression(image)
 <hr>
 
 <p align="center">
-  <img width="640" height="360" src="https://miro.medium.com/max/2396/1*kOQOZxBDNw4lI757soTEyQ.png">
+  <img width="640" height="360" src="https://github.com/sujith2303/X_AI/blob/main/images/NST.png">
 </p>
 
 <pre>
