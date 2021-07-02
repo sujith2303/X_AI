@@ -37,7 +37,9 @@ Here the path is to image folder. The folder must be of the form class1 -> conta
 ImageCompression uses machine learning techniques(Unsupervised learning and Principal component Analysis(PCA) ) for Compressing the size of image.
 <pre>
 from X_AI import ImageCompression
+import cv2
 compress = ImageCompression(image)
+cv2.imshow(compress)
 </pre>
 
 
@@ -51,9 +53,9 @@ compress = ImageCompression(image)
 
 <pre>
 from X_AI import NeuralStyle
-import matplotlib.pyplot as plt
+import cv2
 nst = NeuralStyle(image,styleimage)
-plt.imshow(nst.img)
+cv2.imshow(nst.img)
 </pre>
 image is path to image
 styleimage is path to style image
