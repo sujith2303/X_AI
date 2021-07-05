@@ -6,6 +6,8 @@ import cv2
 
 class ArtGeneration:
   def __init__(self,image_path=None,style_image_path=None,img_shape=(100,100,3)):
+    self.img_nrows=img_shape[0]
+    self.img_ncols=img_shape[1]
     if not image_path:
       raise FileNotFoundError('Please Enter a valid path for image_path!')
     if not style_image_path:
@@ -19,7 +21,28 @@ class ArtGeneration:
     print('Style image')
     cv2.imshow(styleimage)
   
-  
+  def preprocess_image(self,image_path):
+    img = keras.preprocessing.image.load_img(
+        image_path, target_size=(self.img_nrows, self.img_ncols)
+    )
+    img = keras.preprocessing.image.img_to_array(img)
+    img = np.expand_dims(img, axis=0)
+    img = vgg19.preprocess_input(img)
+    return tf.convert_to_tensor(img)
+
+
+  def deprocess_image(self,x):
+      # Util function to convert a tensor into a valid image
+      x = x.reshape((img_nrows, img_ncols, 3))
+      # Remove zero-center by mean pixel
+      x[:, :, 0] += 103.939
+      x[:, :, 1] += 116.779
+      x[:, :, 2] += 123.68
+      # 'BGR'->'RGB'
+      x = x[:, :, ::-1]
+      x = np.clip(x, 0, 255).astype("uint8")
+      return x
+
   def gram_matrix(self,tensors):
     return tf.matmul(tensors,tf.transpose(tensors))
   
