@@ -59,3 +59,17 @@ cv2.imshow(nst.img)
 </pre>
 image is path to image
 styleimage is path to style image
+
+## Object Detection:-
+Train your own custom object detection with just 2 lines of code.Performing object detection is difficult for python users to understand [darknet]('https://pjreddie.com/darknet'). X_AI made it easy. Write just 4 lines of python code and train your own model (be it detecting faces /hands /yourself/ anything).
+
+<pre>
+from X_AI import objectdetection 
+obj = objectdetection._Train(img_path,labels_path)
+</pre>
+img_path --- path to images 
+labels_path --- path to labels (including bounding boxes)
+
+
+## Virtual game:-
+Virtual game is a program where a cricket bat is tracked by our camera. We track the bat movement and corresponding command is sent to the controller. We estimate the pose (standing style) of the player , the bat's movement and give commands in the game.
