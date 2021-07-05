@@ -1,11 +1,47 @@
-import tensorflow as tf
-import os
 import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.applications import vgg19
 import cv2
 
 class ArtGeneration:
-  def __init__(self):
-    pass
+  def __init__(self,image_path=None,style_image_path=None,img_shape=(100,100,3)):
+    if not image_path:
+      raise FileNotFoundError('Please Enter a valid path for image_path!')
+    if not style_image_path:
+      raise FileNotFoundError('Please Enter a valid path for style_image!')
+    baseimage = cv2.imread(image_path)
+    baseimage = cv2.resize(baseimage,img_shape[:2])
+    styleimage =cv2.imread(style_image_path)
+    styleimage =cv2.resize(styleimage,img_shape[:2])
+    print('Base image')
+    cv2.imshow(baseimage)
+    print('Style image')
+    cv2.imshow(styleimage)
+  
+  
+  def gram_matrix(self,tensors):
+    return tf.matmul(tensors,tf.transpose(tensors))
+  
+  def content_cost(self,base,combined):
+    m,n_H, n_W, n_C = combined.shape
+    return (.25 / float(int(n_H * n_W * n_C))) *tf.reduce_sum(tf.square(combination - base))
+  
+  def style_cost(self,style,combined):
+    m, n_H, n_W, n_C = combined.get_shape().as_list()
+    S=self.gram_matrix(style)
+    C=self.gram_matrix(combined)
+    factor = (.5 / (n_H * n_W * n_C)) ** 2
+    return factor * tf.reduce_sum(np.power(S - C, 2))
+  
+  def total_cost(self,J_content, J_style, alpha = 10, beta = 40):
+    J = alpha * J_content + beta * J_style
+    
+    
+    
+    
+    
+    
   
   def content_cost(self,a_C,a_G):
     m, n_H, n_W, n_C = a_G.shape
