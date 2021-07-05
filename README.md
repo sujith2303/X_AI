@@ -61,7 +61,7 @@ image is path to image
 styleimage is path to style image
 
 ## Object Detection:-
-Train your own custom object detection with just 2 lines of code.Performing object detection is difficult for python users to understand [darknet]('https://pjreddie.com/darknet'). X_AI made it easy. Write just 4 lines of python code and train your own model (be it detecting faces /hands /yourself/ anything).
+Train your own custom object detection with just 2 lines of code.Performing object detection is difficult for python users to understand [darknet](https://pjreddie.com/darknet). X_AI made it easy. Write just 4 lines of python code and train your own model (be it detecting faces /hands /yourself/ anything).
 
 <pre>
 from X_AI import objectdetection 
