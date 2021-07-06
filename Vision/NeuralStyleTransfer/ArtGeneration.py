@@ -8,6 +8,17 @@ class ArtGeneration:
   def __init__(self,image_path=None,style_image_path=None,img_shape=(100,100,3)):
     self.img_nrows=img_shape[0]
     self.img_ncols=img_shape[1]
+    self.model =None
+    self.style_layer_names = [
+        "block1_conv1",
+        "block2_conv1",
+        "block3_conv1",
+        "block4_conv1",
+        "block5_conv1",
+    ]
+    self.content_layer_name = "block5_conv2"
+    self.content_weight = 10
+    self.style_weight = 40
     if not image_path:
       raise FileNotFoundError('Please Enter a valid path for image_path!')
     if not style_image_path:
@@ -59,6 +70,38 @@ class ArtGeneration:
   
   def total_cost(self,J_content, J_style, alpha = 10, beta = 40):
     J = alpha * J_content + beta * J_style
+    
+  def _model(self):
+    model = vgg19.VGG19(weights="imagenet", include_top=False)
+    outputs_dict = dict([(layer.name, layer.output) for layer in model.layers])
+    feature_extractor = keras.Model(inputs=model.inputs, outputs=outputs_dict)
+    self.model =feature_extractor
+
+  def compute_loss(self,base,style,combined):
+    input_tensor = tf.concat([
+      base,style,combined],axis=0)
+    features = self.model(input_tensor)
+    loss = tf.zeros(shape=())
+    
+    # Add content loss
+    layer_features = features[self.content_layer_name]
+    base_image_features = layer_features[0, :, :, :]
+    combination_features = layer_features[2, :, :, :]
+    loss = loss + self.content_weight * content_loss(
+        base_image_features, combination_features
+    )
+    # Add style loss
+    for layer_name in self.style_layer_names:
+        layer_features = features[layer_name]
+        style_reference_features = layer_features[1, :, :, :]
+        combination_features = layer_features[2, :, :, :]
+        sl = style_loss(style_reference_features, combination_features)
+        loss += (self.style_weight / len(style_layer_names)) * sl
+
+    # Add total variation loss
+    loss += total_variation_weight * total_variation_loss(combination_image)
+    return loss
+    
     
     
     
