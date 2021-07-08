@@ -8,6 +8,8 @@ class ArtGeneration:
   def __init__(self,image_path=None,style_image_path=None,img_shape=(100,100,3)):
     self.img_nrows=img_shape[0]
     self.img_ncols=img_shape[1]
+    self.base_image_path = image_path
+    self.style_reference_image_path = style_image_path
     self.model =None
     self.iteration = 1000
     self.style_layer_names = [
