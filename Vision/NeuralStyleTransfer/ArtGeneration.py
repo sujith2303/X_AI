@@ -24,12 +24,12 @@ class ArtGeneration:
       raise FileNotFoundError('Please Enter a valid path for image_path!')
     if not style_image_path:
       raise FileNotFoundError('Please Enter a valid path for style_image!')
-    baseimage = cv2.imread(image_path)
+    '''baseimage = cv2.imread(image_path)
     styleimage =cv2.imread(style_image_path)
     print('Base image')
     cv2.imshow(baseimage)
     print('Style image')
-    cv2.imshow(styleimage)
+    cv2.imshow(styleimage)'''
   
   def preprocess_image(self,image_path):
     img = keras.preprocessing.image.load_img(
