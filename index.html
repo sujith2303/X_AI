@@ -1,18 +1,12 @@
-<!DOCTYPE html>
 <html>
-<head>
-<style>
-h1 {text-align: center;}
-</style>
-</head>
 <body>
-<h1>HandWriting Converter</h1>
-<p>Click on the "Choose File" button to upload a file:</p>
+<form enctype = "multipart/form-data" action = "python_script.py" method = "post">
+	
+<p>Upload File: <input type = "file" name = "filename" /></p>
 
-<form action="/action_page.php">
-  <input type="file" id="myFile" name="filename">
-  <input type="submit">
+	
+<p><input type = "submit" value = "Upload" /></p>
+
 </form>
-
 </body>
 </html>
